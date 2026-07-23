@@ -2,7 +2,7 @@ name: SmokeClock
 options:
   bundleIdPrefix: dev.titankill34
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
   developmentLanguage: en
 
 configs:
@@ -25,6 +25,7 @@ targets:
     platform: iOS
     sources:
       - SmokeClock
+      - Sources
     info:
       path: SmokeClock/Info.plist
       properties:
