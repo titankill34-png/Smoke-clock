@@ -129,9 +129,9 @@ struct ContentView: View {
                     .foregroundStyle(.gray)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Canvas { context in
+                Canvas { context, size in
                     let height: CGFloat = 100
-                    let width = context.size.width
+                    let width = size.width
 
                     for i in 0..<7 {
                         let x = width * CGFloat(i) / 6
