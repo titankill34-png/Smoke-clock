@@ -30,7 +30,7 @@ jobs:
           xcodebuild test \
             -project SmokeClock.xcodeproj \
             -scheme SmokeClock \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             CODE_SIGNING_ALLOWED=NO
 
   lint:
