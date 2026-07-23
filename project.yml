@@ -1,0 +1,68 @@
+name: SmokeClock
+options:
+  bundleIdPrefix: dev.titankill34
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+
+configs:
+  Debug: debug
+  Release: release
+
+settingGroups:
+  common:
+    base:
+      SWIFT_VERSION: "5.0"
+      MARKETING_VERSION: "1.0.0"
+      CURRENT_PROJECT_VERSION: "1"
+      TARGETED_DEVICE_FAMILY: "1,2"
+      CODE_SIGN_STYLE: Automatic
+      DEVELOPMENT_TEAM: ""
+
+targets:
+  SmokeClock:
+    type: application
+    platform: iOS
+    sources:
+      - SmokeClock
+    info:
+      path: SmokeClock/Info.plist
+      properties:
+        CFBundleDisplayName: Smoke Clock
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    settings:
+      groups: [common]
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.titankill34.smokeclock
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
+    dependencies: []
+
+  SmokeClockTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - SmokeClockTests
+    settings:
+      groups: [common]
+      base:
+        GENERATE_INFOPLIST_FILE: "YES"
+    dependencies:
+      - target: SmokeClock
+
+schemes:
+  SmokeClock:
+    build:
+      targets:
+        SmokeClock: all
+        SmokeClockTests: [test]
+    test:
+      config: Debug
+      targets:
+        - SmokeClockTests
+    run:
+      config: Debug
+    archive:
+      config: Release
