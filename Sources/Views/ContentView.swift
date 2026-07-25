@@ -1,3 +1,4 @@
+import Charts
 import SwiftUI
 
 struct ContentView: View {
@@ -120,32 +121,47 @@ struct ContentView: View {
                 analyticsCard("Total logged", "\(store.log.count)")
                 analyticsCard("Current interval", gapText)
                 analyticsCard("Days on taper", "\(store.schedule.dayIndex(for: Date()))")
+                analyticsCard("Average gap today", averageGapTodayText)
+                analyticsCard("Best day", bestDayText)
+                analyticsCard("7-day trend", trendText)
             }
 
-            // Mock graph
+            // Real cigarette count per day, last 14 days
             VStack(spacing: 12) {
-                Text("Gap progression")
+                Text("Cigarettes per day (14d)")
                     .font(.subheadline)
                     .foregroundStyle(.gray)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Canvas { context, size in
-                    let height: CGFloat = 100
-                    let width = size.width
-
-                    for i in 0..<7 {
-                        let x = width * CGFloat(i) / 6
-                        let yValue = CGFloat(i) * 0.15 // mock progression
-                        let y = height * (1 - yValue)
-
-                        var path = Path()
-                        path.addEllipse(in: CGRect(x: x - 4, y: y - 4, width: 8, height: 8))
-                        context.fill(path, with: .color(Color.purple))
+                if store.log.isEmpty {
+                    Text("ยังไม่มีข้อมูล")
+                        .font(.subheadline)
+                        .foregroundStyle(.gray)
+                        .frame(maxWidth: .infinity, minHeight: 140)
+                } else {
+                    Chart(store.dailyCounts(days: 14)) { day in
+                        BarMark(
+                            x: .value("Day", day.date, unit: .day),
+                            y: .value("Count", day.count)
+                        )
+                        .foregroundStyle(Color.white.opacity(0.55))
+                        .cornerRadius(3)
+                    }
+                    .frame(height: 140)
+                    .chartXAxis {
+                        AxisMarks(values: .stride(by: .day, count: 2)) { _ in
+                            AxisValueLabel(format: .dateTime.day())
+                                .foregroundStyle(.gray)
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks { _ in
+                            AxisGridLine().foregroundStyle(Color.white.opacity(0.1))
+                            AxisValueLabel()
+                                .foregroundStyle(.gray)
+                        }
                     }
                 }
-                .frame(height: 100)
-                .background(Color.white.opacity(0.05))
-                .cornerRadius(12)
             }
             .padding(16)
             .background(
@@ -250,6 +266,31 @@ struct ContentView: View {
     private var gapText: String {
         let m = Int(store.currentInterval) / 60
         return m >= 60 ? "\(m / 60)h \(m % 60)m" : "\(m)m"
+    }
+
+    private var averageGapTodayText: String {
+        guard let gap = store.averageGapToday else {
+            return "ยังไม่มีข้อมูล"
+        }
+        let m = Int(gap) / 60
+        return m >= 60 ? "\(m / 60)h \(m % 60)m" : "\(m)m"
+    }
+
+    private var bestDayText: String {
+        guard let best = store.bestDay else {
+            return "ยังไม่มีข้อมูล"
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+        return "\(formatter.string(from: best.date)) · \(best.count)"
+    }
+
+    private var trendText: String {
+        guard let trend = store.weekOverWeekTrend else {
+            return "ยังไม่มีข้อมูล"
+        }
+        let sign = trend > 0 ? "+" : ""
+        return "\(sign)\(Int(trend.rounded()))%"
     }
 }
 
