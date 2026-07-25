@@ -150,7 +150,7 @@ struct ContentView: View {
                     .frame(height: 140)
                     .chartXAxis {
                         AxisMarks(values: .stride(by: .day, count: 2)) { _ in
-                            AxisValueLabel(format: .dateTime.day().month(.omitted))
+                            AxisValueLabel(format: .dateTime.day())
                                 .foregroundStyle(.gray)
                         }
                     }
