@@ -9,24 +9,16 @@ struct CountdownView: View {
 
             VStack(spacing: 12) {
                 Text(remaining > 0 ? format(remaining) : "0:00:00")
-                    .font(.system(size: 64, weight: .thin, design: .rounded))
+                    .font(.system(size: 84, weight: .black, design: .default))
                     .monospacedDigit()
+                    .tracking(-3)
                     .contentTransition(.numericText())
-                    .foregroundStyle(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.9, green: 0.5, blue: 1.0),
-                                Color(red: 0.7, green: 0.3, blue: 0.9)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .shadow(color: Color.purple.opacity(0.6), radius: 10, x: 0, y: 0)
+                    .foregroundStyle(Color(hex: 0xF4F5F6))
 
-                Text(remaining > 0 ? "until next" : "gap complete")
-                    .font(.subheadline)
-                    .foregroundStyle(.gray)
+                Text(remaining > 0 ? "UNTIL NEXT" : "GAP COMPLETE")
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .tracking(2.5)
+                    .foregroundStyle(Color(hex: 0x8B8F96))
             }
         }
     }
