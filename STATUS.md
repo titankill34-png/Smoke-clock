@@ -1,12 +1,13 @@
 # STATUS
 
-updated: 2026-07-25 10:32:36 +07
+updated: 2026-07-25 10:32:47 +07
 repo: `titankill34-png/Smoke-clock`
 worker: `claude`
-phase: **idle**
+phase: **running**
+current issue: #9 — กราฟ Analytics ใช้ข้อมูลจริง (model `claude-sonnet-5`)
 
 ## Open queue
-- #9 กราฟ Analytics ใช้ข้อมูลจริง [task]
+- #9 กราฟ Analytics ใช้ข้อมูลจริง [task-running]
 - #8 Settings แก้ค่าได้จริง [task]
 - #7 แจ้งเตือนเมื่อครบเวลา [task,hard]
 - #6 เก็บข้อมูลถาวร ไม่หายเมื่อปิดแอป [task,hard]
