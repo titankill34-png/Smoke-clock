@@ -1,19 +1,34 @@
 import SwiftUI
 
+extension Color {
+    init(hex: UInt32) {
+        self.init(
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255
+        )
+    }
+}
+
 struct ContentView: View {
     @Environment(SmokeStore.self) private var store
     @State private var selectedTab: Tab = .timer
 
     enum Tab { case timer, analytics, settings }
 
+    private let bgTop = Color(hex: 0x1E1F22)
+    private let bgBottom = Color(hex: 0x17181A)
+    private let textPrimary = Color(hex: 0xF4F5F6)
+    private let textDim = Color(hex: 0x8B8F96)
+    private let cardFill = Color(hex: 0x202225)
+    private let cardBorder = Color(hex: 0x2C2E33)
+    private let inactive = Color(hex: 0x5F636A)
+    private let buttonText = Color(hex: 0x17181A)
+
     var body: some View {
         ZStack {
-            // Dark gradient background
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.08, green: 0.10, blue: 0.18),
-                    Color(red: 0.12, green: 0.08, blue: 0.20)
-                ]),
+                gradient: Gradient(colors: [bgTop, bgBottom]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -29,8 +44,9 @@ struct ContentView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
 
-                Divider()
-                    .background(Color.white.opacity(0.1))
+                Rectangle()
+                    .fill(cardBorder)
+                    .frame(height: 1)
 
                 // Content
                 ZStack {
@@ -53,9 +69,10 @@ struct ContentView: View {
 
     private var timerTab: some View {
         VStack(spacing: 24) {
+            sectionHeader(".01", "Timer")
+
             Spacer()
 
-            // Countdown card with glow
             VStack(spacing: 16) {
                 CountdownView(target: store.nextAllowed)
                     .padding(.vertical, 32)
@@ -69,39 +86,25 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
             .padding(24)
             .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.15, green: 0.12, blue: 0.25),
-                                Color(red: 0.12, green: 0.15, blue: 0.22)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .shadow(color: Color.purple.opacity(0.3), radius: 20, x: 0, y: 10)
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(cardFill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(cardBorder, lineWidth: 1)
             )
 
             Button {
                 store.logSmoke()
             } label: {
-                Text("Log one")
-                    .font(.headline)
+                Text("LOG ONE")
+                    .font(.system(size: 15, weight: .bold))
+                    .tracking(1)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .foregroundStyle(.white)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.7, green: 0.3, blue: 0.8),
-                                Color(red: 0.5, green: 0.2, blue: 0.7)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .cornerRadius(12)
+                    .foregroundStyle(buttonText)
+                    .background(textPrimary)
+                    .cornerRadius(2)
             }
 
             Spacer()
@@ -110,23 +113,19 @@ struct ContentView: View {
 
     private var analyticsTab: some View {
         VStack(spacing: 20) {
-            Text("Analytics")
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            sectionHeader(".02", "Analytics")
 
-            // Stat cards
             VStack(spacing: 12) {
                 analyticsCard("Total logged", "\(store.log.count)")
                 analyticsCard("Current interval", gapText)
                 analyticsCard("Days on taper", "\(store.schedule.dayIndex(for: Date()))")
             }
 
-            // Mock graph
             VStack(spacing: 12) {
-                Text("Gap progression")
-                    .font(.subheadline)
-                    .foregroundStyle(.gray)
+                Text("GAP PROGRESSION")
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .tracking(2.5)
+                    .foregroundStyle(textDim)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Canvas { context, size in
@@ -140,17 +139,21 @@ struct ContentView: View {
 
                         var path = Path()
                         path.addEllipse(in: CGRect(x: x - 4, y: y - 4, width: 8, height: 8))
-                        context.fill(path, with: .color(Color.purple))
+                        context.fill(path, with: .color(textPrimary))
                     }
                 }
                 .frame(height: 100)
-                .background(Color.white.opacity(0.05))
-                .cornerRadius(12)
+                .background(cardFill)
+                .cornerRadius(2)
             }
             .padding(16)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white.opacity(0.03))
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(cardFill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(cardBorder, lineWidth: 1)
             )
 
             Spacer()
@@ -159,10 +162,7 @@ struct ContentView: View {
 
     private var settingsTab: some View {
         VStack(spacing: 16) {
-            Text("Settings")
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            sectionHeader(".03", "Settings")
 
             settingRow("Starting gap", "\(Int(store.schedule.baseInterval / 60))m")
             settingRow("Daily increase", "+\(Int(store.schedule.dailyIncrement / 60))m")
@@ -170,18 +170,39 @@ struct ContentView: View {
 
             Spacer()
 
-            Button(role: .destructive) {
+            Button {
                 store.resetLog()
             } label: {
-                Text("Reset log")
+                Text("RESET LOG")
+                    .font(.system(size: 13, weight: .semibold))
+                    .tracking(1)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
+                    .foregroundStyle(textPrimary)
             }
-            .buttonStyle(.bordered)
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(cardBorder, lineWidth: 1)
+            )
         }
     }
 
     // MARK: - Components
+
+    private func sectionHeader(_ number: String, _ title: String) -> some View {
+        HStack(spacing: 8) {
+            Text(number)
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(inactive)
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(textPrimary)
+            Rectangle()
+                .fill(cardBorder)
+                .frame(height: 1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
     private func tabButton(_ label: String, _ tab: Tab) -> some View {
         Button {
@@ -189,14 +210,12 @@ struct ContentView: View {
         } label: {
             VStack(spacing: 4) {
                 Text(label)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(selectedTab == tab ? .white : .gray)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(selectedTab == tab ? .white : inactive)
 
-                if selectedTab == tab {
-                    Capsule()
-                        .fill(Color.purple)
-                        .frame(height: 2)
-                }
+                Rectangle()
+                    .fill(selectedTab == tab ? Color.white : Color.clear)
+                    .frame(height: 1)
             }
         }
         .frame(maxWidth: .infinity)
@@ -205,12 +224,13 @@ struct ContentView: View {
     private func statCard(_ label: String, _ value: String) -> some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
-                .foregroundStyle(.white)
+                .font(.system(size: 20, weight: .semibold, design: .monospaced))
+                .foregroundStyle(textPrimary)
                 .monospacedDigit()
             Text(label)
-                .font(.caption)
-                .foregroundStyle(.gray)
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .tracking(2.5)
+                .foregroundStyle(textDim)
         }
         .frame(maxWidth: .infinity)
     }
@@ -218,33 +238,46 @@ struct ContentView: View {
     private func analyticsCard(_ label: String, _ value: String) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(label)
-                    .font(.subheadline)
-                    .foregroundStyle(.gray)
+                Text(label.uppercased())
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .tracking(2.5)
+                    .foregroundStyle(textDim)
                 Text(value)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(textPrimary)
                     .monospacedDigit()
             }
             Spacer()
         }
         .padding(12)
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 2)
+                .fill(cardFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 2)
+                .stroke(cardBorder, lineWidth: 1)
+        )
     }
 
     private func settingRow(_ label: String, _ value: String) -> some View {
         HStack {
             Text(label)
-                .foregroundStyle(.white)
+                .foregroundStyle(textPrimary)
             Spacer()
             Text(value)
-                .foregroundStyle(.purple)
+                .foregroundStyle(textDim)
                 .monospacedDigit()
         }
         .padding(12)
-        .background(Color.white.opacity(0.03))
-        .cornerRadius(10)
+        .background(
+            RoundedRectangle(cornerRadius: 2)
+                .fill(cardFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 2)
+                .stroke(cardBorder, lineWidth: 1)
+        )
     }
 
     private var gapText: String {
