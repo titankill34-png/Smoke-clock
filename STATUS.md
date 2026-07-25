@@ -1,9 +1,10 @@
 # STATUS
 
-updated: 2026-07-25 10:48:51 +07
+updated: 2026-07-25 10:49:37 +07
 repo: `titankill34-png/Smoke-clock`
 worker: `claude`
-phase: **idle**
+phase: **running**
+current issue: #4 — แก้ ipa.yml เป็น unsigned export (model `claude-sonnet-5`)
 
 ## Open queue
 - #9 กราฟ Analytics ใช้ข้อมูลจริง [needs-review]
@@ -11,7 +12,7 @@ phase: **idle**
 - #7 แจ้งเตือนเมื่อครบเวลา [needs-review,hard]
 - #6 เก็บข้อมูลถาวร ไม่หายเมื่อปิดแอป [needs-review,hard]
 - #5 เปลี่ยน UI เป็นโมโนโครม TURA [needs-review]
-- #4 แก้ ipa.yml เป็น unsigned export [task]
+- #4 แก้ ipa.yml เป็น unsigned export [task-running]
 
 ## Open PRs
 - #14 Convert UI to strict monochrome design (TURA) (`task/5-monochrome-ui`)
