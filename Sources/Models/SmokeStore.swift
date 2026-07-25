@@ -8,10 +8,13 @@ final class SmokeStore {
     private(set) var log: [Date]
     /// The active taper plan.
     var schedule: Schedule
+    /// Drives local notifications; kept separate from the store's own logic.
+    var notifier: SmokeNotifying?
 
-    init(schedule: Schedule = Schedule(), log: [Date] = []) {
+    init(schedule: Schedule = Schedule(), log: [Date] = [], notifier: SmokeNotifying? = nil) {
         self.schedule = schedule
         self.log = log
+        self.notifier = notifier
     }
 
     /// Required gap between smokes for today's taper day.
@@ -37,13 +40,17 @@ final class SmokeStore {
         return log.filter { $0 >= start }.count
     }
 
-    /// Record a smoke at the current moment.
+    /// Record a smoke at the current moment and (re)schedule the reminder.
     func logSmoke() {
         log.append(Date())
+        if let next = nextAllowed {
+            notifier?.scheduleNext(at: next, gapMinutes: Int(currentInterval) / 60)
+        }
     }
 
-    /// Clear the entire log.
+    /// Clear the entire log and drop any pending reminder.
     func resetLog() {
         log.removeAll()
+        notifier?.cancelAll()
     }
 }
