@@ -1,15 +1,16 @@
 # STATUS
 
-updated: 2026-07-25 10:41:24 +07
+updated: 2026-07-25 10:42:08 +07
 repo: `titankill34-png/Smoke-clock`
 worker: `claude`
-phase: **idle**
+phase: **running**
+current issue: #6 — เก็บข้อมูลถาวร ไม่หายเมื่อปิดแอป (model `claude-opus-4-8`)
 
 ## Open queue
 - #9 กราฟ Analytics ใช้ข้อมูลจริง [needs-review]
 - #8 Settings แก้ค่าได้จริง [needs-review]
 - #7 แจ้งเตือนเมื่อครบเวลา [needs-review,hard]
-- #6 เก็บข้อมูลถาวร ไม่หายเมื่อปิดแอป [task,hard]
+- #6 เก็บข้อมูลถาวร ไม่หายเมื่อปิดแอป [task-running,hard]
 - #5 เปลี่ยน UI เป็นโมโนโครม TURA [task]
 - #4 แก้ ipa.yml เป็น unsigned export [task]
 
