@@ -134,7 +134,7 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if store.log.isEmpty {
-                    Text("\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25")
+                    Text("ยังไม่มีข้อมูล")
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                         .frame(maxWidth: .infinity, minHeight: 140)
@@ -270,7 +270,7 @@ struct ContentView: View {
 
     private var averageGapTodayText: String {
         guard let gap = store.averageGapToday else {
-            return "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25"
+            return "ยังไม่มีข้อมูล"
         }
         let m = Int(gap) / 60
         return m >= 60 ? "\(m / 60)h \(m % 60)m" : "\(m)m"
@@ -278,16 +278,16 @@ struct ContentView: View {
 
     private var bestDayText: String {
         guard let best = store.bestDay else {
-            return "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25"
+            return "ยังไม่มีข้อมูล"
         }
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMM"
-        return "\(formatter.string(from: best.date)) \u00b7 \(best.count)"
+        return "\(formatter.string(from: best.date)) · \(best.count)"
     }
 
     private var trendText: String {
         guard let trend = store.weekOverWeekTrend else {
-            return "\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25"
+            return "ยังไม่มีข้อมูล"
         }
         let sign = trend > 0 ? "+" : ""
         return "\(sign)\(Int(trend.rounded()))%"
