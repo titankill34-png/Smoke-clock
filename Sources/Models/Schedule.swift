@@ -2,7 +2,7 @@ import Foundation
 
 /// A tapering plan: the required gap between smokes grows a little each day,
 /// starting at `baseInterval` and never exceeding `maxInterval`.
-struct Schedule {
+struct Schedule: Codable, Equatable {
     /// Starting gap between smokes on day 0.
     var baseInterval: TimeInterval
     /// How much the gap grows for each day on the taper.
