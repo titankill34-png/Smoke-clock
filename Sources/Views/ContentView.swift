@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(SmokeStore.self) private var store
     @State private var selectedTab: Tab = .timer
+    @State private var showResetConfirmation = false
 
     enum Tab { case timer, analytics, settings }
 
@@ -164,21 +165,83 @@ struct ContentView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            settingRow("Starting gap", "\(Int(store.schedule.baseInterval / 60))m")
-            settingRow("Daily increase", "+\(Int(store.schedule.dailyIncrement / 60))m")
-            settingRow("Max gap", "\(Int(store.schedule.maxInterval / 3600))h")
+            settingStepperRow(
+                label: "Starting gap",
+                value: startingGapBinding,
+                range: 15...180,
+                step: 5
+            ) { "\($0)m" }
+
+            settingStepperRow(
+                label: "Daily increase",
+                value: dailyIncreaseBinding,
+                range: 0...30,
+                step: 1
+            ) { "+\($0)m" }
+
+            settingStepperRow(
+                label: "Max gap",
+                value: maxGapBinding,
+                range: 1...12,
+                step: 1
+            ) { "\($0)h" }
+
+            Button {
+                store.schedule.startDate = Calendar.current.startOfDay(for: Date())
+            } label: {
+                Text("เริ่มนับใหม่วันนี้")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.bordered)
+            .tint(.purple)
 
             Spacer()
 
             Button(role: .destructive) {
-                store.resetLog()
+                showResetConfirmation = true
             } label: {
                 Text("Reset log")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
             .buttonStyle(.bordered)
+            .confirmationDialog(
+                "Reset log?",
+                isPresented: $showResetConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Reset log", role: .destructive) {
+                    store.resetLog()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This permanently deletes every logged smoke. This can't be undone.")
+            }
         }
+    }
+
+    // MARK: - Settings bindings
+
+    private var startingGapBinding: Binding<Int> {
+        Binding(
+            get: { Int(store.schedule.baseInterval / 60) },
+            set: { store.schedule.baseInterval = TimeInterval($0) * 60 }
+        )
+    }
+
+    private var dailyIncreaseBinding: Binding<Int> {
+        Binding(
+            get: { Int(store.schedule.dailyIncrement / 60) },
+            set: { store.schedule.dailyIncrement = TimeInterval($0) * 60 }
+        )
+    }
+
+    private var maxGapBinding: Binding<Int> {
+        Binding(
+            get: { Int(store.schedule.maxInterval / 3600) },
+            set: { store.schedule.maxInterval = TimeInterval($0) * 3600 }
+        )
     }
 
     // MARK: - Components
@@ -233,14 +296,23 @@ struct ContentView: View {
         .cornerRadius(12)
     }
 
-    private func settingRow(_ label: String, _ value: String) -> some View {
+    private func settingStepperRow(
+        label: String,
+        value: Binding<Int>,
+        range: ClosedRange<Int>,
+        step: Int,
+        formatter: @escaping (Int) -> String
+    ) -> some View {
         HStack {
             Text(label)
                 .foregroundStyle(.white)
             Spacer()
-            Text(value)
-                .foregroundStyle(.purple)
-                .monospacedDigit()
+            Stepper(value: value, in: range, step: step) {
+                Text(formatter(value.wrappedValue))
+                    .foregroundStyle(.purple)
+                    .monospacedDigit()
+            }
+            .fixedSize()
         }
         .padding(12)
         .background(Color.white.opacity(0.03))
